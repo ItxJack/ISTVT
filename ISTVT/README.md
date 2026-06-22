@@ -130,22 +130,6 @@ This installs PyTorch, einops, timm, facenet-pytorch (MTCNN), OpenCV, scikit-lea
 
 ## 3. The run order (with **CPU / GPU** for every step)
 
-Here is the entire project as a command list. The **Machine** column is the whole point —
-switch the Studio to GPU **only** for the rows that say GPU, then switch back to CPU to
-stop burning credits.
-
-| # | Command | Machine | Why |
-|---|---------|---------|-----|
-| 1 | `python config.py` | **CPU** | Prints the active config + checks dataset paths exist. |
-| 2 | `python scripts/00_check_datasets.py` | **CPU** | Counts videos, checks class balance, opens a few to confirm they're readable. |
-| 3 | `python -m src.preprocess --dataset celebdf` | **GPU** (T4) recommended | Face detection (MTCNN) is ~10–30× faster on GPU. One-time. |
-| 4 | `python -m src.preprocess --dataset dfdc` | **GPU** (T4) | Same as above. |
-| 5 | `python -m src.preprocess --dataset ff` | **GPU** (T4) | Same; corrupt videos are auto-skipped + logged. |
-| 6 | `python -m src.build_manifest` | **CPU** | Pure file listing → `manifest.csv`. No compute. |
-| 7 | `python -m src.train` | **GPU** (A10G / A100) | The actual model training. The expensive part. |
-| 8 | `python -m src.evaluate` | **GPU** (T4) or **CPU** | Cross-dataset AUROC. Inference only — light. |
-| 9 | `python -m src.visualize` | **GPU** or **CPU** | Attention heatmaps for a few videos. Light. |
-
 > **How to switch machine on Lightning AI:** top-right of the Studio there's a machine
 > selector. Click it → choose CPU or a GPU (T4 is the cheap one; A10G/A100 for training).
 > Switching keeps all your files. **Switch to GPU right before step 3, and switch back to
